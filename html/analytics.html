@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Моніторинг, Замовлення та Аналітика Транспорту</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    #map {
+      width: 100%;
+      height: 50vh;
+    }
+    .section {
+      padding: 20px;
+    }
+    .order-section, .analytics-section {
+      background-color: #f9f9f9;
+      margin-top: 10px;
+    }
+    .order-section h2, .analytics-section h2 {
+      margin-top: 0;
+    }
+    .order-list {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .order-list li {
+      padding: 5px;
+      border-bottom: 1px solid #ddd;
+    }
+    .analytics-data {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+      text-align: center;
+    }
+    .analytics-data div {
+      padding: 10px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      flex: 1;
+      margin: 0 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center;">Моніторинг, Замовлення та Аналітика Транспорту</h1>
+  <div id="map"></div>
+
+  <div class="section order-section">
+    <h2>Замовити транспорт</h2>
+    <form id="orderForm">
+      <label for="transportName">Назва транспорту:</label><br>
+      <input type="text" id="transportName" placeholder="Наприклад, Таксі 505" required><br><br>
+      <label for="pickupLocation">Місце посадки:</label><br>
+      <input type="text" id="pickupLocation" placeholder="Наприклад, Київ, Хрещатик" required><br><br>
+      <button type="submit">Замовити</button>
+    </form>
+    <h3>Список замовлень:</h3>
+    <ul class="order-list" id="orderList">
+      <li>Поки що немає замовлень...</li>
+    </ul>
+  </div>
+
+  <div class="section analytics-section">
+    <h2>Аналітика</h2>
+    <div class="analytics-data">
+      <div id="activeTransport">
+        <h3>Активний транспорт</h3>
+        <p>0</p>
+      </div>
+      <div id="totalOrders">
+        <h3>Кількість замовлень</h3>
+        <p>0</p>
+      </div>
+      <div id="popularPickup">
+        <h3>Найпопулярніше місце</h3>
+        <p>Немає даних</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Ініціалізація карти
+    const map = L.map('map').setView([50.4501, 30.5234], 13); // Київ
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+    }).addTo(map);
+
+    // Симуляція транспорту
+    const vehicles = [
+      { id: 1, name: 'Bus 101', coords: [50.4501, 30.5234] },
+      { id: 2, name: 'Truck 202', coords: [50.4551, 30.5200] },
+      { id: 3, name: 'Taxi 303', coords: [50.4451, 30.5300] },
+    ];
+
+    const markers = {};
+    function updateMarkers() {
+      vehicles.forEach(vehicle => {
+        if (markers[vehicle.id]) {
+          markers[vehicle.id].setLatLng(vehicle.coords);
+        } else {
+          const marker = L.marker(vehicle.coords)
+            .addTo(map)
+            .bindPopup(`<b>${vehicle.name}</b>`);
+          markers[vehicle.id] = marker;
+        }
+      });
+      updateAnalytics();
+    }
+
+    function simulateMovement() {
+      vehicles.forEach(vehicle => {
+        vehicle.coords[0] += (Math.random() - 0.5) * 0.001;
+        vehicle.coords[1] += (Math.random() - 0.5) * 0.001;
+      });
+      updateMarkers();
+    }
+
+    setInterval(simulateMovement, 2000);
+    updateMarkers();
+
+    const orders = [];
+    const orderForm = document.getElementById('orderForm');
+    const orderList = document.getElementById('orderList');
+    const activeTransport = document.getElementById('activeTransport').querySelector('p');
+    const totalOrders = document.getElementById('totalOrders').querySelector('p');
+    const popularPickup = document.getElementById('popularPickup').querySelector('p');
+
+    function addOrder(name, location) {
+      orders.push({ name, location });
+      renderOrders();
+      updateAnalytics();
+    }
+
+    function renderOrders() {
+      orderList.innerHTML = '';
+      if (orders.length === 0) {
+        orderList.innerHTML = '<li>Поки що немає замовлень...</li>';
+      } else {
+        orders.forEach(order => {
+          const listItem = document.createElement('li');
+          listItem.textContent = `${order.name} — ${order.location}`;
+          orderList.appendChild(listItem);
+        });
+      }
+    }
+
+    function updateAnalytics() {
+      activeTransport.textContent = vehicles.length;
+
+      totalOrders.textContent = orders.length;
+
+      if (orders.length > 0) {
+        const locationCounts = {};
+        orders.forEach(order => {
+          locationCounts[order.location] = (locationCounts[order.location] || 0) + 1;
+        });
+
+        const popularLocation = Object.entries(locationCounts).sort((a, b) => b[1] - a[1])[0][0];
+        popularPickup.textContent = popularLocation;
+      } else {
+        popularPickup.textContent = 'Немає даних';
+      }
+    }
+
+    orderForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const transportName = document.getElementById('transportName').value;
+      const pickupLocation = document.getElementById('pickupLocation').value;
+      addOrder(transportName, pickupLocation);
+      orderForm.reset();
+    });
+  </script>
+</body>
+</html>

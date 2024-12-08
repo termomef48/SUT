@@ -1,0 +1,42 @@
+.settings-section {
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.settings-section h2, .settings-section h3 {
+  color: #333;
+}
+
+.settings-block {
+  margin-bottom: 20px;
+}
+
+.settings-block label {
+  display: block;
+  font-weight: bold;
+  margin: 10px 0 5px;
+}
+
+.settings-block input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.settings-block button {
+  padding: 10px 15px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.settings-block button:hover {
+  background-color: #45a049;
+}

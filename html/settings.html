@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Система управління транспортом</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <div class="section settings-section">
+    <h2>Налаштування</h2>
+
+    <!-- Додавання транспорту -->
+    <div class="settings-block">
+      <h3>Додати новий транспорт</h3>
+      <form id="settingsForm">
+        <label for="newTransportName">Назва транспорту:</label>
+        <input type="text" id="newTransportName" placeholder="Наприклад, Автобус 404" required>
+
+        <label for="newTransportLat">Широта:</label>
+        <input type="number" id="newTransportLat" placeholder="Наприклад, 50.4501" step="0.0001" required>
+
+        <label for="newTransportLng">Довгота:</label>
+        <input type="number" id="newTransportLng" placeholder="Наприклад, 30.5234" step="0.0001" required>
+
+        <button type="submit">Додати транспорт</button>
+      </form>
+    </div>
+
+    <!-- Налаштування частоти оновлення -->
+    <div class="settings-block">
+      <h3>Частота оновлення</h3>
+      <label for="updateInterval">Інтервал оновлення (мс):</label>
+      <input type="number" id="updateInterval" value="2000" step="500">
+      <button id="applySettings">Застосувати</button>
+    </div>
+  </div>
+
+  <script src="../js/script.js"></script>
+</body>
+</html>
